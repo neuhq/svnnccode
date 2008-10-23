@@ -1,0 +1,92 @@
+使用svnsync镜像版本库
+
+original url: http://rocksun.cn/svn/?p=20
+Filed under: Administration — rocksun @ 10:11 pm 
+
+术语
+为了更好的讨论svnsync，而不会陷入混淆，在继续之前我们应当建立一些术语：
+主（Master）: 将要通过svnsync被同步的活动读/写版本库。
+镜像（Mirror）: 将要与master通过svnsync同步的只读版本库。
+总揽
+Subversion
+1.4发布之后，svnsync工具就成了标准Subversion的一部分，可以用”一个可以维护只读Subversion镜像所有功能的工具”描述，从它的文档中理解它的目的非常简单，为什么在企业中维护一个镜像版本库非常重要？每个Subversion实现都不一样，可能有很多原因，但是有一些是共同的原因：
+提供了版本库的备份，这样可以使灾后恢复和软件升级方面得到好处。
+提供了一个简单的只读版本库，一些人希望提供简单的只读访问版本库，通过svnsync你可以简单的达到这个目标而无需维护授权文件或其他。（例如：维护一个版本库的社区访问点，同时另一个不同的版本库给开发者使用）
+有很多例子，但是必须提供一个svnsync可以提供什么的思想。（更详细的解释，请参考”使用Subversion进行版本控制“的”Repository维护“）
+现在我可以投入到脚本建议和例子上了，这有点可耻吧。为了确实理解我们为什么这样做，我们必须理解svnsync的工作。我会简短解释，然后会进入例子脚本和建议，你可以将其应用到你的Subversion实现。
+理解svnsync
+svnsync工作方式非常简单：将一个版本库的修订版本”重放”到另一个，这意味着镜像版本库和主版本库使用相同的规则，对镜像版本库执行操作的用户必须对其有完全的写权限，而秘诀就是Subversion在镜像版本库的修订版本0上维护了必要的元数据，从而可以知道应该同步什么。svnsync工作原理非常容易理解，但是让svnsync依设计工作，还是有一些规则，你需要知道这一点。下面是一些规则和使用svnsync的最佳实践：
+同步用户需要对整个版本库有读/写权限
+同步用户需要能够修改特定修订版本属性
+镜像版本库需要对除同步用户以外的用户只读
+在你同步一个镜像版本库之前，镜像版本库需要在修订版本0
+现在，我们知道什么是svnsync了，也知道了它的工作原理以及为什么有用，让我们通过对主版本库使用svnsync开始同步一个镜像版本库。
+实现svnsync
+实现svnsync的唯一的前提条件是创建一个希望镜像的版本库，一旦创建，你就可以按照下面步骤继续：
+Step 1: 创建镜像Repository
+svnadmin create MIRROR_REPO_PATH
+
+Step 2: 设置镜像版本库只对同步用户可写
+为了让镜像版本库只被同步用户写，我们的例子里用户名是”svnsync”，我们有一些选项，一个就是使用Subversion的授权功能设置缺省的访问规则：
+[/]
+* = r
+svnsync = rw
+
+另一个选项就是使用start-commit 检查svnsync用户，下面是一个例子，是shell脚本：
+#!/bin/sh
+
+USER=”$2″
+
+if [ “$USER” = “syncuser” ]; then exit 0; fi
+
+echo “Only the syncuser user may commit new revisions as this is a read-only,
+mirror repository.” >&2
+exit 1
+
+Step 3: 让镜像版本库使用同步用户修改修订版本属性
+为此，我们需要创建一个pre-revprop-change钩子，类似于下面的例子，也是shell脚本：
+#!/bin/sh
+
+USER=”$3″
+
+if [ “$USER” = “syncuser” ]; then exit 0; fi
+
+echo “Only the syncuser user may change revision properties as this is a
+read-only, mirror repository.”  >&2
+
+exit 1
+
+Step 4: 注册同步的镜像版本库
+在任何平台使用下面的svnsync命令：
+svnsync initialize URL_TO_MIRROR_REPO URL_TO_MASTER_REPO --username=svnsync
+--password=svnsyncpassword
+
+如果所有的配置正确，你一定会看到下面的输出：
+Copied properties for revision 0.
+
+现在你已经注册了镜像版本库与主版本库的同步，我们必须继续执行初始的同步，这样镜像版本库才和主版本库是一样的了。
+Step 5: 执行初始同步
+为了确定所有事情已经准备好了，并且执行初始同步，在任何系统只需要执行：
+svnsync synchronize URL_TO_MIRROR_REPO --username=svnsync
+--password=svnsyncpassword
+
+如果所有的同步正确，你会看到类似的输出：
+Committed revision 1.
+Copied properties for revision 1.
+Committed revision 2.
+Copied properties for revision 2.
+Committed revision 3.
+Copied properties for revision 3.
+…
+
+Step 6: 使用post-commit钩子自动同步
+根据初始同步的输出，我们现在要做的就是写一个定时执行或post-commit钩子来同步镜像版本库，我建议post-commit，因为它让你的镜像版本库尽可能的最新，下面是可以用在主版本库上同步镜像版本库的post-commit钩子，一个shell脚本：
+# Example for synchronizing one repository from the post-commit hook
+#!/bin/sh
+SVNSYNC=/usr/local/bin/svnsync
+$SVNSYNC synchronize URL_TO_MIRROR_REPO –username=svnsync
+–password=svnsyncpassword &
+
+exit 0
+
+就这样了，一旦你执行了上面列出的步骤，你一定可以得到一个随着主版本库提交自动更新的镜像版本库，我们对于svnsync的介绍和如何去实现它。
