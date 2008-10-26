@@ -3,6 +3,10 @@
 
 #define	MAXBUFFER	8192
 
+/* read zhwikir-xxxxxxxx-pages-articles.xml for words
+ *
+ *
+ */
 int main(int argc, char *argv[])
 {
 	char	buff[MAXBUFFER];
