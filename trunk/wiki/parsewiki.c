@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
 
 	memset(buff, 0, sizeof(char) * MAXBUFFER);
 	memset(stack, 0, sizeof(address*) * MAXBUFFER);
-	int i = 0;
 	while(fgets(buff, MAXBUFFER, stdin)){
+		int i = 0;
 		char* p1 = buff;
 		char* p2;
 		do{
@@ -58,16 +58,17 @@ int main(int argc, char *argv[])
 
 		int j;
 		int k = 0;
+
 		for(j = 1; j < i; j ++){
-			if(stack[j].left < 0){
+			if(stack[j].left < 0 && stack[j-1].left > 0){
 				memset(out, 0, sizeof(char) * MAXBUFFER);
-				strncpy(out, stack[k].p, stack[j].p - stack[k].p);
+				strncpy(out, stack[j-1].p, stack[j].p - stack[j-1].p);
 				puts(out);
 				if(k>1)
 					k --;
 			}
-			else
-				stack[++k] = stack[j];
+//			else
+//				stack[++k] = stack[j];
 		}
 
 		
@@ -87,6 +88,7 @@ int main(int argc, char *argv[])
 		}while(p1 && p2);
 */
 		memset(buff, 0, sizeof(char) * MAXBUFFER);
+		memset(stack, 0, sizeof(address) * MAXBUFFER);
 	}
 	return 0;
 }
