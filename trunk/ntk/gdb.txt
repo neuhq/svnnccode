@@ -1,0 +1,49 @@
+file 	装入想要调试的可执行文件.
+kill 	终止正在调试的程序.
+list 	列出产生执行文件的源代码的一部分.
+next 	执行一行源代码但不进入函数内部.
+step 	执行一行源代码而且进入函数内部.
+run 	执行当前被调试的程序
+quit 	终止 gdb
+watch 	使你能监视一个变量的值而不管它何时被改变.
+break 	在代码里设置断点, 这将使程序执行到这里时被挂起.
+make 	使你能不退出 gdb 就可以重新产生可执行文件.
+shell 	使你能不离开 gdb 就执行 UNIX shell 命令. 
+
+=========================================================
+backtrace
+main()->func1()->func2()->func3()->.....
+bt n	列出函数调用信息 func3() func2() ...
+bt -n	列出函数调用信息 main() func1() ...
+
+bt full
+bt full n
+bt full -n
+		列出函数调用信息的同时列出局部变量
+
+set backtrace past-main
+set backtrace past-main on
+		越过程序入口（main）继续向前跟踪
+set backtrace past-main off
+		跟踪到（main）便停止
+show backtrace past-main
+		显示是否越过main进行跟踪
+et backtrace past-entry
+set backtrace past-entry on
+        Backtraces will continue past the internal entry point of an
+		application. This entry point is encoded by the linker when 
+		the application is built, and is likely before the user entry
+		point main (or equivalent) is called.
+set backtrace past-entry off
+        Backtraces will stop when they encounter the internal entry
+		point of an application. This is the default. show backtrace
+		past-entry Display the current internal entry point backtrace
+		policy.
+
+set backtrace limit n
+set backtrace limit 0
+		设置跟踪层数限制，0意味着没有限制
+show backtrace limit
+		显示当前跟踪层数限制
+
+		
