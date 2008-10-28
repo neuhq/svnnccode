@@ -1,0 +1,9 @@
+SEL setWidthHeight;
+setWidthHeight = @selector(setWidth:height:);
+
+id helper = getTheReceiver();
+SEL request = getTheSelector();
+[helper performSelector:request];
+
+self
+_cmd类型为SEL,代表当前正在调用的方法
