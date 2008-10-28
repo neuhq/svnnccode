@@ -46,4 +46,39 @@ set backtrace limit 0
 show backtrace limit
 		显示当前跟踪层数限制
 
+main()
+func1()
+func2()
+func3()
+frame n
+f n
+		选择帧栈n
+frame addr
+f addr
+		选择地址位于addr的帧栈
+up n	在堆栈中上移n个帧栈;当前帧栈为func3(),则 up 3->main()
+down n  在堆栈中下移n个帧栈;当前帧栈为main(), 则 down 2->func2()
+
+up-silently n
+down-silently n
+		功能跟up,down一样，只不过悄悄的进行工作。主要用于gdb命令脚本，这时
+		没有必要输出
 		
+frame
+f		输出当前帧栈信息
+
+info frame
+info f	输出当前帧栈详细信息
+			帧栈地址
+			下个帧栈地址（本帧栈调用的函数）
+			上个帧栈地址（调用本函数的函数地址)
+			帧栈所在的源文件语言类型
+			帧栈参数所在的地址
+			帧栈局部变量地址
+			帧栈保存的程序计数器
+			哪个寄存器被保存在帧栈内
+info frame addr
+info f addr
+info args
+info locals
+info catch	输出当前帧栈当前执行点所有的异常捕获处理信息
