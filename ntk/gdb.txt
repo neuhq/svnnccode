@@ -10,7 +10,7 @@ break 	在代码里设置断点, 这将使程序执行到这里时被挂起.
 make 	使你能不退出 gdb 就可以重新产生可执行文件.
 shell 	使你能不离开 gdb 就执行 UNIX shell 命令. 
 
-=========================================================
+===============================================================================
 backtrace
 main()->func1()->func2()->func3()->.....
 bt n	列出函数调用信息 func3() func2() ...
@@ -82,3 +82,25 @@ info f addr
 info args
 info locals
 info catch	输出当前帧栈当前执行点所有的异常捕获处理信息
+
+===============================================================================
+break location<v>
+break		在当前选择的帧栈（见backtrace）的下一个指令处设置断点
+break ... if cond<v>
+tbreak args
+hbreak args
+thbreak args
+rbreak regex<v>
+			挑选符合正则表达式regex的函数，设置断点
+info breakpoints [n]
+info break [n]
+info watchpoints [n]
+			输出所有的断点、观察断点、异常抛出的信息。若设置可选参数n，则只输出
+			编号为n的断点（观察断点、异常抛出断点）的信息
+			输出信息内容：
+				Type					断点类型
+				Disposition(Disp)		断点执行完毕后是否继续保留该断点
+				Enable or Disabled(Enb)	断点是否起作用
+				Address					断点位置(未决断点显示<PENDING>,如共享库)
+				What					断点于程序源文件中的位置
+
