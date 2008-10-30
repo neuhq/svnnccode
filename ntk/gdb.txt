@@ -103,4 +103,36 @@ info watchpoints [n]
 				Enable or Disabled(Enb)	断点是否起作用
 				Address					断点位置(未决断点显示<PENDING>,如共享库)
 				What					断点于程序源文件中的位置
+set breakpoint pending auto
+			当GDB找不到断点位置时，它会向你询问是否设置未决断点
+set breakpoint pending on
+			若断点位置未知，则自动创建未决断点
+set breakpoint pending off
+			表明不创建未决断点。任何位置未知的断点将会导致错误。该设置对已经设置
+			的未决断点不会产生影响
+show breakpoint pending
+			显示创建未决断点时的动作（创建成功还是导致错误）
 
+对于由命令hbreak设置的断点，GDB会始终是用硬件断点（hardware breakpoints）
+
+set breakpoint auto-hw on
+			默认设置。当设置断点时，GDB会尝试使用目标内存映射来判断是使用软断点
+			还是硬断点 （software or hardware breakpoint）
+set breakpoint auto-hw off
+			指示GDB不要自动选择断点类型。如果目标提供了内存映射，GDB会发出警
+			告：设置断点于只读地址（set software breakpoint at a read-only
+			 address）
+
+watch expr<v> [thread threadnum<v>]
+			设置断点。当程序写入表达式expr<v>并且值改变的时候，中断程序运行。可
+			以简单的使用该命令来监视单个变量的值
+				(gdb) watch foo
+			如果该命令附带thread threadnum<v>，仅当线程号为threadnum<v>的线程改
+			变expr<v>的值时，GDB才中断程序执行。这种仅限于单个线程的断点只能应
+			用于硬件断点
+rwatch expr<v> [thread threadnum<v>]
+			程序读取expr<v>的值时，打断程序执行
+awatch expr<v> [thread threadnum<v>]
+			程序读写expr的值时，打断程序执行
+info watchpoints
+			功能等同于info break
