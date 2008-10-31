@@ -12,4 +12,10 @@ root class 	跟NSObject同一级别的用户自己实现的类，用户需要实
 			数方法，一般用不到。（可以对root class调用实例方法(-)）
 			http://developer.apple.com/documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/chapter_3_section_4.html#//apple_ref/doc/uid/TP40002974-CH4-DontLinkElementID_84
 
-
+-(void)forwardInvocation:(NSInvocation *)anInvocation
+{
+	if([someOtherObject respondsToSelector:[anInvocation selection]])
+		[anInvocation invokeWithTarget:someOtherObject];
+	else
+		[super forwardInvocation:anInvocation];
+}//捕获没有实现的方法，并进行处理
