@@ -1,0 +1,1 @@
+http://www.debian.org/doc/debian-policy/ch-maintainerscripts.html#s6.1
