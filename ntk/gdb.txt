@@ -138,3 +138,33 @@ awatch expr<v> [thread threadnum<v>]
 			程序读写expr的值时，打断程序执行
 info watchpoints
 			功能等同于info break
+
+catch event<v>
+			当下列事件发生时，打断程序运行
+			throw	C++异常抛出
+			catch	C++异常捕获
+			exception
+					产生Ada异常，如果命令后面跟随异常名
+					称（比如catch exception	Program_Error）,则只有特定异常产生
+					时调试器才中断程序运行
+			exception unhandled
+					异常产生，程序却没有处理该异常，则产生中断
+			assert	Ada断言失败，产生中断
+			exec	调用exec。仅HP-UX和GNU/Linux下可用
+			fork	调用fork。仅HP-UX和GNU/Linux下可用
+			vfork	调用vfork。仅HP-UX和GNU/Linux下可用
+			load
+			load libname<v>
+					共享库的动态加载，或者是名为libname<v>的库的加载。仅HP-UX
+					下可用
+			unload
+			unload libname<v>
+					与load相反。仅HP-UX下可用
+tcatch event<v>
+			断点只作用一次，然后自动被删掉
+
+info break列出当前的捕获断点
+
+有时对于异常处理的调试来说，catch命令并不是最好的方法：如果需要知道异常产生的确
+切位置，最好在调用异常处理之前进行中断，执行 break __raise_exception
+
