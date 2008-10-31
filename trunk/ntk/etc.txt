@@ -1,3 +1,7 @@
 http://www.debian.org/doc/debian-policy/ch-maintainerscripts.html#s6.1
 base64 -b t AA ZZ
 aria2 多点下载程序
+http://gro.clinux.org
+	GRO 为开放源代码软件开发者提供全方面的免费服务，包括CVS仓库, 邮件列表,
+	BUG跟踪, 在线论坛, 任务管理, 网站空间, 项目存储及完整的备份,
+	并且完全是通过WEB方式来管理的
