@@ -88,7 +88,9 @@ break location<v>
 break		在当前选择的帧栈（见backtrace）的下一个指令处设置断点
 break ... if cond<v>
 tbreak args
+			执行到该断点时，打断程序并删除该断点（只产生一次做用）
 hbreak args
+			设置硬件辅助断点
 thbreak args
 rbreak regex<v>
 			挑选符合正则表达式regex的函数，设置断点
