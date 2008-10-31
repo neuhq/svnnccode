@@ -187,3 +187,9 @@ enable [breakpoints] once range...<v>
 enable [breakpoints] delete range...<v>
 			使指定断点只工作一次，然后删除 tbreak
 
+condition bnum<v> expression<v>
+			为断点指定中断条件
+conditon bnum<v>
+			删除中断条件
+ignore bnum<v> count<v>
+			接下来count<v>次到达断点bnum<v>时，程序不会中断执行
