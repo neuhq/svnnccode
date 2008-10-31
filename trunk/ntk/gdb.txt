@@ -168,3 +168,22 @@ info break列出当前的捕获断点
 有时对于异常处理的调试来说，catch命令并不是最好的方法：如果需要知道异常产生的确
 切位置，最好在调用异常处理之前进行中断，执行 break __raise_exception
 
+clear		删掉位于下一个将要执行的指令处的任何断点
+clear location<v>
+			删掉设置在指定位置location<v>处的断点:
+			clear function<v>
+			clear filename<v>:function<v>
+			clear linenum<v>
+			clear filename<v>:linenum<v>
+delete [breakpoints] [range<v>...]
+			如果范围参数range<v>存在，删除指定范围内的断点；否则删除全部断点
+
+disable [breakpoints] [range...<v>]
+			禁止指定的断点（或者是所有断点）
+enable [breakpoints] [range...<v>]
+			激活所有指定断点（或者所有断点）
+enable [breakpoints] once range...<v>
+			临时激活断点，中断程序后禁止range...<v>指定的断点
+enable [breakpoints] delete range...<v>
+			使指定断点只工作一次，然后删除 tbreak
+
