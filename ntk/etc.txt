@@ -1,2 +1,3 @@
 http://www.debian.org/doc/debian-policy/ch-maintainerscripts.html#s6.1
 base64 -b t AA ZZ
+aria2 多点下载程序
