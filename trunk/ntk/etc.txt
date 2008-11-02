@@ -5,3 +5,34 @@ http://gro.clinux.org
 	GRO 为开放源代码软件开发者提供全方面的免费服务，包括CVS仓库, 邮件列表,
 	BUG跟踪, 在线论坛, 任务管理, 网站空间, 项目存储及完整的备份,
 	并且完全是通过WEB方式来管理的
+===============================================================================
+sourceforge的shell又重新开通了，如果有项目的话，可以通过下列命令激活
+	Logging in to your interactive shell...
+
+You don't have an active shell at this time.  For basic file transfers and
+management, use web.sourceforge.net -- it allows rsync, sftp, and scp access.
+
+If you would like to create a shell, use ssh to login using a USER,PROJECT
+username with the "create" command.  If you tell ssh to allocate a tty
+(e.g. using -t), an interactive shell will be opened when the create is
+done.  Otherwise, the create command will exit when the shell becomes
+ready for use.  An example create that enters the shell when ready:
+
+    ssh -t USER,PROJECT@shell.sourceforge.net create
+
+Connection to shell.sourceforge.net closed.
+[user@gnu dir]$ ssh -t USER,PROJECT@shell.sourceforge.net create
+USER,PROJECT@shell.sourceforge.net's password: 
+
+Requesting a new shell for "USER" and waiting for it to start.
+queued... creating... starting...
+
+This is an interactive shell created for user USER,PROJECT.
+Use the "timeleft" command to see how much time remains before shutdown.
+Use the "shutdown" command to destroy the shell before the time limit.
+For path information and login help, type "sf-help".
+
+同时还开通了开发者网页，开发者可以往上面放个人内容
+rsync -av index.html USERNAME@web.sourceforge.net:userweb/htdocs
+
+
