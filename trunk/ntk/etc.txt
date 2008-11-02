@@ -48,3 +48,6 @@ servers http://www.emule.org.cn/server.met
 用ov_load命令导入overnet的node列表 http://download.overnet.org/contact.dat
 用kad_load命令倒入 kad的node列表 http://www.emule-inside.net/nodes.dat
 或者http://renololo1.free.fr/e/nodes.dat 也可以使用eMule的nodes.dat
+
+web管理 http://localhost:4080
+Telnet管理 telnet localhost 4000
