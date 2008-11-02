@@ -35,4 +35,5 @@ For path information and login help, type "sf-help".
 同时还开通了开发者网页，开发者可以往上面放个人内容
 rsync -av index.html USERNAME@web.sourceforge.net:userweb/htdocs
 
-
+===============================================================================
+电驴server地址  http://ed2k.2x4u.de/list.html
