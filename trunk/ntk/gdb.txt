@@ -84,6 +84,8 @@ info locals
 info catch	输出当前帧栈当前执行点所有的异常捕获处理信息
 
 ===============================================================================
+info porgram
+			显示当前程序的状态：运行还是停止（以及为什么停止）
 break location<v>
 break		在当前选择的帧栈（见backtrace）的下一个指令处设置断点
 break ... if cond<v>
@@ -193,3 +195,41 @@ conditon bnum<v>
 			删除中断条件
 ignore bnum<v> count<v>
 			接下来count<v>次到达断点bnum<v>时，程序不会中断执行
+
+continue [ignore-count<v>]
+c [ignore-count<v>]
+fg [ignore-count]
+			从当前断点继续执行，参数ignore-count<v>表示下面遇到当前断点继续向前
+			执行的次数
+
+step
+step count<v>
+next [count<v>]
+set step-mode
+set step-mode on
+set step-mode off
+show step-mode
+finish
+			执行至当前帧栈返回，打印返回值（如果存在）
+until
+u			用于循环中，继续执行，直至跳出
+until location<v>
+u location<v>
+			执行至指定位置中断，或者是当前帧栈返回。可以用来跳过嵌套调用
+				int factorial (int value)
+				{
+					if (value > 1){
+						value *= factorial (value - 1);
+					}
+					return value;
+				}
+advance location<v>
+			执行至指定位置中断，跳出当前帧栈时也会中断。跟until不一样的是，
+			advance不会跳过嵌套函数调用，并且目标位置也不必位于当前帧栈
+stepi
+stepi arg<v>
+si			执行一个机器指令，arg<v>代表执行多少机器指令
+nexti
+nexti arg<v>
+ni			执行一个机器指令，如果碰到了函数调用，则执行至函数返回
+			argv<v>代表执行多少
