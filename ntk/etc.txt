@@ -53,3 +53,6 @@ web管理 http://localhost:4080
 Telnet管理 telnet localhost 4000
 
 FAQ file:///usr/share/doc/mldonkey-x.x.x/FAQ.html
+
+===============================================================================
+gcc example.c -o example `pkg-config libxml-2.0 --cflags --libs`
