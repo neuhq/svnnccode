@@ -19,3 +19,37 @@ root class 	跟NSObject同一级别的用户自己实现的类，用户需要实
 	else
 		[super forwardInvocation:anInvocation];
 }//捕获没有实现的方法，并进行处理
+
+===============================================================================
+High	superclass
+						<-------|
+		- negotiate				|
+								|
+Mid		superclass(High)--------|
+
+						<-------|
+		- negotiate				|
+		- makeLastingPeace		|
+								|
+Low		superclass(Mid)---------|
+
+		- negotiate
+
+
+调用[low makeLastingPeace]
+如果在Mid中makeLastingPeace定义如下
+－ makeLastingPeace
+{
+	[self negotiate];
+	...
+}
+调用Low里面的negotiate
+
+如果使用super代替self的话
+－ makeLastingPeace
+{
+	[super negotiate];
+	...
+}
+则调用High里面定义的negotiate函数。
+在这两种情况下都不会调用定义在Mid中的negotiate函数
