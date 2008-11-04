@@ -56,3 +56,7 @@ FAQ file:///usr/share/doc/mldonkey-x.x.x/FAQ.html
 
 ===============================================================================
 gcc example.c -o example `pkg-config libxml-2.0 --cflags --libs`
+
+===============================================================================
+libxml2 sax的例子
+http://gaiacrtn.free.fr/articles/libxml2_sax2.html
