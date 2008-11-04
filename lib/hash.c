@@ -2,6 +2,7 @@
 #include	<stdlib.h>
 #include	<string.h>
 #include	<stdio.h>
+#include	<ctype.h>
 #include	"error.h"
 
 #define	MAXNUM	1024*1024*8
