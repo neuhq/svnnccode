@@ -18,6 +18,7 @@
  */
 #include	<stdio.h>
 #include	<string.h>
+#include	"../lib/hash.h"
 
 #define	MAXBUFFER	8192
 
@@ -81,53 +82,7 @@ int main(int argc, char *argv[])
 			if(stack[j].left < 0 && stack[j-1].left > 0){
 				memset(out, 0, sizeof(char) * MAXBUFFER);
 				strncpy(out, stack[j-1].p, stack[j].p - stack[j-1].p);
-				if(!strstr(out, "User") &&
-						!strstr(out, "：图像") &&
-						!strstr(out, "Image") &&
-						!strstr(out, "Help") &&
-						!strstr(out, "ca") &&
-						!strstr(out, "cy") &&
-						!strstr(out, "da") &&
-						!strstr(out, "de") &&
-						!strstr(out, "el") &&
-						!strstr(out, "en") &&
-						!strstr(out, "eo") &&
-						!strstr(out, "es") &&
-						!strstr(out, "fr") &&
-						!strstr(out, "he") &&
-						!strstr(out, "ja") &&
-						!strstr(out, "lb") &&
-						!strstr(out, "nl") &&
-						!strstr(out, "no") &&
-						!strstr(out, "pl") &&
-						!strstr(out, "simple") &&
-						!strstr(out, "sr") &&
-						!strstr(out, "sv") &&
-						!strstr(out, "vi") &&
-						!strstr(out, "zh") 
-/*						ca:Pàgina d'acollida
-						cy:Wicipedia:Help
-						da:Wikipedia:Hjælp
-						de:Wikipedia:Hilfe
-						el:Wikipedia:Help
-						en:Help:Contents
-						eo:Vikipedio:Helpo
-						es:Wikipedia:Ayuda
-						fr:Wikipédia:Aide
-						he:ויקיפדיה:עזרה
-						ja:Wikipedia:ヘルプ
-						lb:Hëllef:Hëllef
-						nl:Portaal:Hulp en beheer
-						no:Wikipedia:Hjelp
-						pl:Wikipedia:Pomoc
-						simple:Wikipedia:Help
-						sr:Википедија:Помоћ
-						sv:Wikipedia:Hjälp
-						vi:Wikipedia:Trợ giúp
-						zh-classical:Help:目錄
-*/
-						)
-				puts(out);
+				insertdata(out);
 				if(k>1)
 					k --;
 			}
@@ -154,5 +109,6 @@ int main(int argc, char *argv[])
 		memset(buff, 0, sizeof(char) * MAXBUFFER);
 		memset(stack, 0, sizeof(address) * MAXBUFFER);
 	}
+	output();
 	return 0;
 }
