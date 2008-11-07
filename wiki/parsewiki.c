@@ -109,6 +109,6 @@ int main(int argc, char *argv[])
 		memset(buff, 0, sizeof(char) * MAXBUFFER);
 		memset(stack, 0, sizeof(address) * MAXBUFFER);
 	}
-	output();
+//	output();
 	return 0;
 }
