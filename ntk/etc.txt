@@ -51,6 +51,25 @@ servers http://www.emule.org.cn/server.met
 用kad_load命令倒入 kad的node列表 http://www.emule-inside.net/nodes.dat
 或者http://renololo1.free.fr/e/nodes.dat 也可以使用eMule的nodes.dat
 
+设置浏览器关联
+这里只说firefox的关联，如果需要设置其它浏览器，请参考mldonkey
+和浏览器关联的办法,适用 firefox, konqueror
+先建立脚本,这里我们把它取名为 submit, 放在 ~/.mldonkey 下面。内容如下:
+#!/bin/bash
+echo dllink $*|nc -q 1 127.0.0.1 4000
+如果系统是ArchLinux，则需安装netcat(gnu-netcat),并改为
+#!/bin/bash
+echo dllink $*|nc 127.0.0.1 4000
+然后右键单击它，找到属性-权限部分，钩上“可执行”
+接下来在firefox地址栏输入 about:config
+新建 字符串(string)
+network.protocol-handler.app.ed2k
+值为submit 脚本的位置，比如我的是 /home/xxb/.mldonkey/submit
+也可以安装firefox扩展，以关联ed2k、bt等，解压后的
+mldoneky-distrib-xxx/ed2k_mozilla/文件夹下有个mldonkey_protocol_handler-xx.xpi，把它拖到fx窗口选择安装。重启后就可以双击MLdonkey
+Protocal Handler这个扩展设置关联了，这个扩展也可以关联到amule。不过扩展当然是
+能不装就不装，所以推荐使用submit脚本的方法。
+
 web管理 http://localhost:4080
 Telnet管理 telnet localhost 4000
 
