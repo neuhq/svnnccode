@@ -81,3 +81,7 @@ gcc example.c -o example `pkg-config libxml-2.0 --cflags --libs`
 ===============================================================================
 libxml2 sax的例子
 http://gaiacrtn.free.fr/articles/libxml2_sax2.html
+
+===============================================================================
+浅谈c中wprintf和宽字符显示
+http://blog.chinaunix.net/u2/62362/showart_501278.html
