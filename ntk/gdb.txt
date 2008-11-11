@@ -233,3 +233,24 @@ nexti
 nexti arg<v>
 ni			执行一个机器指令，如果碰到了函数调用，则执行至函数返回
 			argv<v>代表执行多少
+
+==============================================================================
+list linenum<v>
+			输出当前源代码文件行linenum<v>周围的源代码
+line function<v>
+			输出函数function<v>周围的源代码
+list
+list -		输出上次输出的代码之前的代码
+set listsize count<v>
+			使list命令每次输出的代码行数为count<v>
+show listsize
+			显示命令list输出的代码行数
+list linespec<v>
+			以linespec<v>指定的行为中心，输出源代码
+list first<v>,last<v>
+			输出从first<v>到last<v>的源代码
+list ,last	输出的源代码以last<v>终止
+list first,	输出的源代码以first<v>开始
+list +		输出上次list命令终止处后面的源代码
+list -		输出上次list命令开始处前面的源代码
+
