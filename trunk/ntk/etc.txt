@@ -85,3 +85,7 @@ http://gaiacrtn.free.fr/articles/libxml2_sax2.html
 ===============================================================================
 浅谈c中wprintf和宽字符显示
 http://blog.chinaunix.net/u2/62362/showart_501278.html
+
+===============================================================================
+Linux API Hooking 函数覆盖
+http://techblogsbyvij.blogspot.com/2006/03/linux-api-hooking.html
