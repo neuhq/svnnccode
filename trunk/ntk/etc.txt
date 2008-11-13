@@ -93,3 +93,7 @@ http://techblogsbyvij.blogspot.com/2006/03/linux-api-hooking.html
 ===============================================================================
 北大中文论坛
 http://www.pkucn.com/
+
+===============================================================================
+Setting Preference
+http://code.google.com/p/siphon svn/trunk/Siphon/settings
