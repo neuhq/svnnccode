@@ -22,7 +22,7 @@
 #include	<string.h>
 #include	"error.h"
 
-#define	BLOCKNUM	(1<<16)
+#define	BLOCKNUM	(1<<20)
 #define MAXBYTE		1024
 static uint16_t s[BLOCKNUM];
 static uint16_t t[BLOCKNUM];
@@ -52,41 +52,57 @@ inline int utf8_length(const char* s)
 	else if((c & 0xC0) == 0xC0)
 		return 2;
 	else
-		return 0;
+		return 1;
 }
 
 /* init s(Simplified) t(Traditional) */
-int stinit(FILE* file)
+int stinit(const char* path)
 {
-	if(!file)
+	int lineno = 0;
+	FILE* file = fopen(path, "r");
+	if(!file){
+		err_msg("%s open %s error", path);
 		return -1;
+	}
 	memset(s, 0, BLOCKNUM * sizeof(uint16_t));
 	memset(t, 0, BLOCKNUM * sizeof(uint16_t));
 	
 	char buff[MAXBYTE];
 	memset(buff, 0, MAXBYTE * sizeof(char));
 	while(fgets(buff,MAXBYTE, file)){
+		lineno++;
 		char* temp = buff;
+		int l;
+		while(*temp && (l = utf8_length(temp)) <= 1){
+			temp ++;
+		}
+		if(!temp){
+			err_msg("in %s file %s lineno %i %s data error(original\\ttarget)",
+					__func__, path, lineno, buff);
+			memset(buff, 0, MAXBYTE * sizeof(char));
+			continue;
+			
+		}
 		uint32_t u1 = stringprep_utf8_to_unichar(temp);
-		int i = utf8_length(temp);
-		if(i < 0){
-			err_msg("stinit format error %s\n", buff);
+		temp += l;
+
+		while(*temp &&  (l = utf8_length(temp)) <= 1 ) {
+			temp ++;
+		}
+		if(!temp){
+			err_msg("in %s file %s lineno %i %s data error(original\\ttarget)",
+					__func__, path, lineno, buff);
+			memset(buff, 0, MAXBYTE * sizeof(char));
 			continue;
 		}
-		temp += i;
-		while( (i = utf8_length(temp)) <= 1 && temp - buff < strlen(buff)) {
-			if(i < 0){
-				err_msg("stinit format error %s\n", buff);
-				break;
-			}
-			temp += 1;
-		}
-		if(i < 0 || temp - buff >= strlen(buff) - 2 )
-			continue;
 		uint32_t u2 = stringprep_utf8_to_unichar(temp);
+
 		if(u1 < BLOCKNUM && u2 < BLOCKNUM){
 			s[u1] = u2;
 			t[u2] = u1;
+		}else{
+			err_msg("func %s file %s line %i %s, unichar is greater than 2^20",
+					__func__, path, lineno, buff);
 		}
 		memset(buff, 0, MAXBYTE * sizeof(char));
 	}
@@ -96,8 +112,9 @@ int stinit(FILE* file)
 int s2t(const char* ss, char* tt)
 {
 	uint32_t si = stringprep_utf8_to_unichar(ss);
-	if(si > BLOCKNUM)
+	if(si >= BLOCKNUM){
 		return -1;
+	}
 	if(s[si] == 0)
 		return 0;
 	return stringprep_unichar_to_utf8(s[si], tt);
@@ -106,15 +123,27 @@ int s2t(const char* ss, char* tt)
 int t2s(const char* ss, char* tt)
 {
 	uint32_t si = stringprep_utf8_to_unichar(ss);
-	if(si > BLOCKNUM)
+	if(si >= BLOCKNUM){
 		return -1;
+	}
 	if(t[si] == 0)
 		return 0;
 	return stringprep_unichar_to_utf8(t[si], tt);
 }
 
-int file_s2t(FILE* ss, FILE* tt)
+int file_s2t(const char* spath, const char* tpath)
 {
+	FILE* ss = fopen(spath, "r");
+	if(!ss){
+		err_msg("Open file %s error", spath);
+		return -1;
+	}
+	FILE* tt = fopen(tpath, "w");
+	if(!tt){
+		err_msg("Open file %s error", tpath);
+		return -1;
+	}
+
 	char buff[MAXBYTE];
 	char outbuff[MAXBYTE];
 	memset(buff, 0, sizeof(char) * MAXBYTE);
@@ -147,8 +176,19 @@ int file_s2t(FILE* ss, FILE* tt)
 	return 0;
 }
 
-int file_t2s(FILE* ss, FILE* tt)
+int file_t2s(const char* spath, const char* tpath)
 {
+	FILE* ss = fopen(spath, "r");
+	if(!ss){
+		err_msg("Open file %s error", spath);
+		return -1;
+	}
+	FILE* tt = fopen(tpath, "w");
+	if(!tt){
+		err_msg("Open file %s error", tpath);
+		return -1;
+	}
+
 	char buff[MAXBYTE];
 	char outbuff[MAXBYTE];
 	memset(buff, 0, sizeof(char) * MAXBYTE);
