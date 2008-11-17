@@ -21,7 +21,9 @@
 #include	<fcntl.h>
 #include	<stdint.h>
 #include	<stdlib.h>
+#include	<stdio.h>
 #include	<stringprep.h>
+#include	<string.h>
 #include	"error.h"
 #include	"libdef.h"
 #include	"sim2tri.h"
@@ -31,7 +33,20 @@
 
 static int utf8_cmp(const void* p1, const void* p2)
 {
-	return strcmp((const char*)p1, (const char*)p2);
+	int l1, l2;
+	const char* s1 = *(char* const*)p1, *s2 = *(char* const*)p2;
+	while( (l1 = utf8_length(s1)) > 1 && (l2 = utf8_length(s2)) > 1){
+		uint32_t i1 = stringprep_utf8_to_unichar(s1);
+		uint32_t i2 = stringprep_utf8_to_unichar(s2);
+		if(i1 != i2)
+			return (i1 - i2);
+		s1 += l1;
+		s2 += l2;
+		continue;
+	}
+	if(l1 <= 1)
+		return 1;
+	return -1;
 }
 
 static	char*		wordptr[WORDSNUM];
@@ -75,7 +90,7 @@ int	words_arrange(const char* spath, const char* tpath)
 		return -1;
 	}
 
-	memset(wordsptr, 0, sizeof(char*) * WORDSNUM);
+	memset(wordptr, 0, sizeof(char*) * WORDSNUM);
 	memset(buff, 0, sizeof(char) * BUFFLEN);
 	int index = 0;
 	while(fgets(buff, BUFFLEN, f) != NULL){
@@ -102,10 +117,15 @@ int	words_arrange(const char* spath, const char* tpath)
 				index ++;
 				continue;
 			}
+			else{
+				err_msg("%s WORDSNUM is too small", __FILE__);
+				return -1;
+			}
 		}while(*t);
 	}
 	qsort(wordptr, index, sizeof(char*), utf8_cmp);
 	int i;
 	for(i = 0; i < index; i++)
 		printf("%s\n", wordptr[i]);
+	return 0;
 }
