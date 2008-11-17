@@ -95,5 +95,8 @@ http://techblogsbyvij.blogspot.com/2006/03/linux-api-hooking.html
 http://www.pkucn.com/
 
 ===============================================================================
-Setting Preference
+iPhone Setting Preference
 http://code.google.com/p/siphon svn/trunk/Siphon/settings
+
+===============================================================================
+uint32_t uint16_t uint8_t	#include <stdint.h>
