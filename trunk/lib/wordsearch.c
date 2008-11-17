@@ -16,11 +16,25 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include	<sys/types.h>
+#include	<sys/stat.h>
+#include	<fcntl.h>
+#include	<stdint.h>
+#include	<stdlib.h>
+#include	<stringprep.h>
 #include	"error.h"
+#include	"libdef.h"
+#include	"sim2tri.h"
 
 #define	WORDSNUM	8*1024*1024
 #define	BUFFLEN		1024
-static	char*	wordptr[WORDSNUM];
+
+static int utf8_cmp(const void* p1, const void* p2)
+{
+	return strcmp((const char*)p1, (const char*)p2);
+}
+
+static	char*		wordptr[WORDSNUM];
 
 /*	words_arrange
  *	const char* spath: file containing words
@@ -39,19 +53,59 @@ int	words_arrange(const char* spath, const char* tpath)
 	}
 	memset(buff, 0, sizeof(char) * BUFFLEN);
 	snprintf(buff, BUFFLEN, "%s.idx", tpath);
-	FILE*	tidx = fopen(buff, "w+");
-	if(!tidx){
+	int	fidx = open(buff, O_RDWR | O_CREAT | O_EXCL, 
+					S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
+	if(fidx < 0){
 		err_msg("%s %s %i open file %s error",
 				__FILE__, __func__, __LINE__, buff);
 		return -1;
 	}
 	memset(buff, 0, sizeof(char) * BUFFLEN);
 	snprintf(buff, BUFFLEN, "%s.txt", tpath);
-	FILE*	ttxt = fopen(buff, "w+");
-	if(!ttxt){
+	int	ftxt = open(buff, O_RDWR | O_CREAT | O_EXCL,
+					S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
+	if(ftxt < 0){
 		err_msg("%s %s %i open file %s error",
 				__FILE__, __func__, __LINE__, buff);
 		return -1;
 	}
-	
+	if(lseek(fidx, UNICODELEN * sizeof(int32_t), SEEK_SET) == -1){
+		err_msg("%s %s %i lseek file %s.idx error",
+				__FILE__, __func__, __LINE__, tpath);
+		return -1;
+	}
+
+	memset(wordsptr, 0, sizeof(char*) * WORDSNUM);
+	memset(buff, 0, sizeof(char) * BUFFLEN);
+	int index = 0;
+	while(fgets(buff, BUFFLEN, f) != NULL){
+		char*	t = buff;
+		do{
+			while(*t && utf8_length(t) <= 1)
+				t++;
+			if(!*t){
+				memset(buff, 0, sizeof(char) * BUFFLEN);
+				continue;
+			}
+			char* t1 = t;
+			int l ;
+			while(*t && (l = utf8_length(t)) > 1){
+				t += l;
+			}
+			if(index < WORDSNUM){
+				wordptr[index] = malloc((t - t1 + 1) * sizeof(char*) );
+				if(!wordptr[index])
+					err_sys("%s %s %i malloc error",
+							__FILE__, __func__, __LINE__);
+				strncpy(wordptr[index], t1, t - t1);
+				wordptr[index][t-t1] = '\0';
+				index ++;
+				continue;
+			}
+		}while(*t);
+	}
+	qsort(wordptr, index, sizeof(char*), utf8_cmp);
+	int i;
+	for(i = 0; i < index; i++)
+		printf("%s\n", wordptr[i]);
 }
