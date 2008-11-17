@@ -10,7 +10,7 @@ static void	err_doit(int, const char *, va_list);
 char	*pname = NULL;		/* caller can set this from argv[0] */
 #define	MAXLINE	4096
 
-static	FILE*	std_err = stderr;
+/*static	FILE*	std_err = stderr;
 
 void err_set(FILE* err)
 {
@@ -18,7 +18,7 @@ void err_set(FILE* err)
 		std_err = err;
 	else
 		err_msg("in %s err is NULL", __func__);
-}
+}*/
 
 /* Nonfatal error related to a system call.
  * Print a message and return. */
@@ -106,7 +106,7 @@ err_doit(int errnoflag, const char *fmt, va_list ap)
 		sprintf(buf+strlen(buf), ": %s", strerror(errno_save));
 	strcat(buf, "\n");
 	fflush(stdout);		/* in case stdout and stderr are the same */
-	fputs(buf, std_err);
+	fputs(buf, stderr);
 	fflush(NULL);		/* flushes all stdio output streams */
 	return;
 }
