@@ -24,6 +24,8 @@
 #include	<stdio.h>
 #include	<stringprep.h>
 #include	<string.h>
+#include	<sys/types.h>
+#include	<sys/mman.h>
 #include	"error.h"
 #include	"libdef.h"
 #include	"sim2tri.h"
@@ -75,6 +77,12 @@ int	words_arrange(const char* spath, const char* tpath)
 				__FILE__, __func__, __LINE__, buff);
 		return -1;
 	}
+	if(lseek(fidx, UNICODELEN * sizeof(int32_t) - 1, SEEK_SET) == -1){
+		err_msg("%s %s %i lseek file %s.idx error",
+				__FILE__, __func__, __LINE__, tpath);
+		return -1;
+	}
+	write(fidx, "\0", 1);
 	memset(buff, 0, sizeof(char) * BUFFLEN);
 	snprintf(buff, BUFFLEN, "%s.txt", tpath);
 	int	ftxt = open(buff, O_RDWR | O_CREAT | O_EXCL,
@@ -84,11 +92,15 @@ int	words_arrange(const char* spath, const char* tpath)
 				__FILE__, __func__, __LINE__, buff);
 		return -1;
 	}
-	if(lseek(fidx, UNICODELEN * sizeof(int32_t), SEEK_SET) == -1){
-		err_msg("%s %s %i lseek file %s.idx error",
-				__FILE__, __func__, __LINE__, tpath);
+	caddr_t	idx;
+	if((idx = mmap(0, UNICODELEN * sizeof(uint32_t), PROT_READ | PROT_WRITE,
+					 MAP_SHARED, fidx, 0) ) == (caddr_t)-1){
+		err_msg("%s %s %i mmap failed", __FILE__, __func__, __LINE__);
 		return -1;
 	}
+	memset(idx, 0, UNICODELEN * sizeof(uint32_t));	
+	munmap(idx, UNICODELEN * sizeof(uint32_t));
+	return 0;
 
 	memset(wordptr, 0, sizeof(char*) * WORDSNUM);
 	memset(buff, 0, sizeof(char) * BUFFLEN);
@@ -124,8 +136,5 @@ int	words_arrange(const char* spath, const char* tpath)
 		}while(*t);
 	}
 	qsort(wordptr, index, sizeof(char*), utf8_cmp);
-	int i;
-	for(i = 0; i < index; i++)
-		printf("%s\n", wordptr[i]);
-	return 0;
+
 }
