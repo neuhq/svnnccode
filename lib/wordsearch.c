@@ -26,6 +26,7 @@
 #include	<string.h>
 #include	<sys/types.h>
 #include	<sys/mman.h>
+#include	<netinet/in.h>
 #include	"error.h"
 #include	"libdef.h"
 #include	"sim2tri.h"
@@ -99,8 +100,8 @@ int	words_arrange(const char* spath, const char* tpath)
 		return -1;
 	}
 	memset(idx, 0, UNICODELEN * sizeof(uint32_t));	
-	munmap(idx, UNICODELEN * sizeof(uint32_t));
-	return 0;
+/*	munmap(idx, UNICODELEN * sizeof(uint32_t));
+	return 0;*/
 
 	memset(wordptr, 0, sizeof(char*) * WORDSNUM);
 	memset(buff, 0, sizeof(char) * BUFFLEN);
@@ -136,5 +137,108 @@ int	words_arrange(const char* spath, const char* tpath)
 		}while(*t);
 	}
 	qsort(wordptr, index, sizeof(char*), utf8_cmp);
+	
+	int i;
+	uint32_t pre = 0;
+	uint32_t* idxp = (uint32_t*)idx;
+	for(i = 0; i < index; i++){
+		uint32_t now = stringprep_utf8_to_unichar(wordptr[i]);
+		if(now != pre){
+			pre = now;
+			uint32_t addr = lseek(ftxt, 0, SEEK_CUR);
+			if(addr == (off_t)-1){
+				err_msg("%s %s %i lseek file %s.txt error",
+						__FILE__, __func__, __LINE__, tpath);
+				return -1;
+			}
+			if(addr >= UNICODELEN){
+				err_msg("UNICODELEN(%i) is too small", UNICODELEN);
+				continue;
+			}
+			idxp[now] = htonl(addr);
+		}
+		memset(buff, 0, BUFFLEN * sizeof(char));
+		strncpy(buff, wordptr[i], BUFFLEN);
+		buff[strlen(buff)] = '\n';
+		write(ftxt, buff, strlen(buff));
+		free(wordptr[i]);
+	}
+	close(ftxt);
+	munmap(idx, UNICODELEN * sizeof(uint32_t));
+	close(fidx);
+	return 0;
+}
 
+static int	idxf;
+static int	wordf;
+uint32_t*	idxm;
+caddr_t	wordm;
+static int	sign = 0;
+int word_search_init(const char* idxpath, const char* wordpath)
+{
+	struct stat statbuff;
+	if(stat(idxpath, &statbuff) < 0){
+		err_msg("%s %s %i stat %s error",
+				__FILE__, __func__, __LINE__, idxpath);
+		return -1;
+	}
+	idxf = open(idxpath, O_RDONLY);
+	if(idxf < 0){
+		err_msg("%s %s %i open %s error",
+				__FILE__, __func__, __LINE__, idxpath);
+		return -1;
+	}
+	caddr_t addrt = mmap(0, statbuff.st_size, PROT_READ, MAP_SHARED, idxf, 0);
+	if(addrt == (caddr_t)-1){
+		err_msg("%s %s %i mmap %s error",
+				__FILE__, __func__, __LINE__, idxpath);
+		return -1;
+	}
+	idxm = (uint32_t*)addrt;
+
+	if(stat(wordpath, &statbuff) < 0){
+		err_msg("%s %s %i stat %s error",
+				__FILE__, __func__, __LINE__, wordpath);
+		return -1;
+	}
+	wordf = open(wordpath, O_RDONLY);
+	if(wordf < 0){
+		err_msg("%s %s %i open %s error",
+				__FILE__, __func__, __LINE__, wordpath);
+		return -1;
+	}
+	wordm = mmap(0, statbuff.st_size, PROT_READ, MAP_SHARED, wordf, 0);
+	if(wordm == (caddr_t)-1){
+		err_msg("%s %s %i mmap %s error",
+				__FILE__, __func__, __LINE__, wordpath);
+		return -1;
+	}
+	sign = 1;
+	return 0;
+}
+
+int word_search(const char* word, char* buff, int len)
+{
+	if(!sign){
+		err_msg("please call word_search_init first");
+		return -1;
+	}
+	if(utf8_length(word) <= 1)
+		return -1;
+	uint32_t index_unicode = stringprep_utf8_to_unichar(word);
+	if(index_unicode >= UNICODELEN){
+		err_msg("%s %s %i UNICODELEN is too small %s",
+				__FILE__, __func__, __LINE__, word);
+		return -1;
+	}
+	uint32_t index_word = ntohl(idxm[index_unicode]);
+	uint32_t i;
+	uint32_t index_end;
+	for(i=index_unicode + 1; i < UNICODELEN; i++ ){
+		if(ntohl(idxm[i]) != 0)
+			break;
+	}
+	index_end = ntohl(idxm[i]);
+	write(STDOUT_FILENO, (wordm + index_word), index_end - index_word);
+	return 0;
 }

@@ -20,5 +20,6 @@
 #ifndef	__WORDSEARCH_H__
 #define	__WORDSEARCH_H__
 int	words_arrange(const char* spath, const char* tpath);
-
+int word_search_init(const char* idxpath, const char* wordpath);
+int word_search(const char* word, char* buff, int len);
 #endif
