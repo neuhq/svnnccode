@@ -141,28 +141,34 @@ int	words_arrange(const char* spath, const char* tpath)
 	int i;
 	uint32_t pre = 0;
 	uint32_t* idxp = (uint32_t*)idx;
+	uint32_t offset = 0;
 	for(i = 0; i < index; i++){
 		uint32_t now = stringprep_utf8_to_unichar(wordptr[i]);
+		memset(buff, 0, BUFFLEN * sizeof(char));
 		if(now != pre){
 			pre = now;
-			uint32_t addr = lseek(ftxt, 0, SEEK_CUR);
-			if(addr == (off_t)-1){
-				err_msg("%s %s %i lseek file %s.txt error",
-						__FILE__, __func__, __LINE__, tpath);
+			if(write(ftxt, buff, 1) <0 ){
+				err_msg("write to %s.txt fail", tpath);
 				return -1;
 			}
-			if(addr >= UNICODELEN){
+			offset ++;
+			if(now >= UNICODELEN){
 				err_msg("UNICODELEN(%i) is too small", UNICODELEN);
 				continue;
 			}
-			idxp[now] = htonl(addr);
+			idxp[now] = htonl(offset);
 		}
-		memset(buff, 0, BUFFLEN * sizeof(char));
 		strncpy(buff, wordptr[i], BUFFLEN);
 		buff[strlen(buff)] = '\n';
-		write(ftxt, buff, strlen(buff));
+		if(write(ftxt, buff, strlen(buff)) < 0 ){
+			err_msg("write to %s.txt fail", tpath);
+			return -1;
+		}
+		offset += strlen(buff);
 		free(wordptr[i]);
 	}
+	memset(buff, 0, BUFFLEN * sizeof(char));
+	write(ftxt, buff, 1);
 	close(ftxt);
 	munmap(idx, UNICODELEN * sizeof(uint32_t));
 	close(fidx);
@@ -241,4 +247,31 @@ int word_search(const char* word, char* buff, int len)
 	index_end = ntohl(idxm[i]);
 	write(STDOUT_FILENO, (wordm + index_word), index_end - index_word);
 	return 0;
+}
+
+int word_search2(const char* word)
+{
+	char buff[BUFFLEN] = {0};
+	if(!sign){
+		err_msg("please call word_search_init first");
+		return -1;
+	}
+	if(utf8_length(word) <= 1)
+		return -1;
+
+	uint32_t index_unicode = stringprep_utf8_to_unichar(word);
+	if(index_unicode >= UNICODELEN){
+		err_msg("%s %s %i UNICODELEN is too small %s",
+				__FILE__, __func__, __LINE__, word);
+		return -1;
+	}
+	uint32_t index_word = ntohl(idxm[index_unicode]);
+	memset(buff, 0, BUFFLEN * sizeof(char));
+	strncpy(buff, word, BUFFLEN - 1);
+	buff[strlen(buff)] = '\n';
+	if(strstr((wordm+index_word), buff))
+		return 1;
+	else
+		return 0;
+
 }
