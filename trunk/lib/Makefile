@@ -15,5 +15,9 @@ wordsearch = wordsearch_main.o wordsearch.o error.o sim2tri.o
 wordsearch_main : $(wordsearch)
 	gcc ${CFLAGS} ${wordsearch} -o wordsearch_main
 
+ishanzi = ishanzi.o ishanzi_main.o
+ishanzi_main : ${ishanzi}
+	gcc ${CFLAGS} ${ishanzi} -o ishanzi_main
+
 clean:
 	rm *.o
