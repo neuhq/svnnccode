@@ -30,9 +30,10 @@
 #include	"error.h"
 #include	"libdef.h"
 #include	"sim2tri.h"
+#include	"ishanzi.h"
 
 #define	WORDSNUM	8*1024*1024
-#define	BUFFLEN		1024
+#define	BUFFLEN		1024*128
 
 static int utf8_cmp(const void* p1, const void* p2)
 {
@@ -274,4 +275,56 @@ int word_search2(const char* word)
 	else
 		return 0;
 
+}
+#define	MAXWORD	10
+int word_split(const char* str)
+{
+	char buff[BUFFLEN];
+	char result[BUFFLEN];
+	int index[MAXWORD];
+	char* pr = result;
+	char* p = str;
+		memset(result, 0, BUFFLEN * sizeof(char));
+	while(p - str < strlen(str)){
+		memset(buff, 0, BUFFLEN * sizeof(char));
+		while(utf8_length(p) <= 1){
+			*pr++ = *p++;
+		}
+		if(pr != result)
+			*pr ++ = ' ';
+		int l = 0;
+		char* t = p;
+		int i = -1;
+		while( (l = utf8_length(t)) > 1 && i < MAXWORD){
+			strncpy(buff + (t - p), t, l);
+			if(ishanzi(buff + (t - p))){
+				t += l;
+				index[++i] = strlen(buff);
+				continue;
+			}
+			else
+				break;
+		}
+		if(t == p){
+			p += l;
+			continue;
+		}
+	//	printf("buff is %s i is %i\n", buff, i);
+		while(i>=0){
+			if(word_search2(buff) || i == 0){
+				strncpy(pr, buff, BUFFLEN - (pr - result));
+				pr += strlen(buff);
+				*pr++ = ' ';
+				p += strlen(buff);
+	//			printf("p is %s\n", p);
+				break;
+			}
+	//		printf("index[%i] is %i\n", i, index[i]);
+			i--;
+			memset(buff+index[i], 0, BUFFLEN - index[i]);
+		}
+
+	}
+	printf("result %s\n", result);
+	return 0;
 }
