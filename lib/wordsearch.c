@@ -279,12 +279,13 @@ int word_search2(const char* word)
 #define	MAXWORD	10
 int word_split(const char* str)
 {
+	printf("%s\n", str);
 	char buff[BUFFLEN];
 	char result[BUFFLEN];
 	int index[MAXWORD];
 	char* pr = result;
 	char* p = str;
-		memset(result, 0, BUFFLEN * sizeof(char));
+	memset(result, 0, BUFFLEN * sizeof(char));
 	while(p - str < strlen(str)){
 		memset(buff, 0, BUFFLEN * sizeof(char));
 		while(utf8_length(p) <= 1){
@@ -295,36 +296,37 @@ int word_split(const char* str)
 		int l = 0;
 		char* t = p;
 		int i = -1;
-		while( (l = utf8_length(t)) > 1 && i < MAXWORD){
-			strncpy(buff + (t - p), t, l);
-			if(ishanzi(buff + (t - p))){
+		while( (l = utf8_length(t)) > 1 && i < MAXWORD - 1){
+			int tl = strlen(buff);
+			strncpy(buff + tl, t, l);
+			if(ishanzi(buff + tl)){
 				t += l;
 				index[++i] = strlen(buff);
 				continue;
 			}
-			else
+			else{
+				memset(buff + tl, 0, 100);
 				break;
+			}
 		}
 		if(t == p){
 			p += l;
+			*pr ++ = ' ';
 			continue;
 		}
-	//	printf("buff is %s i is %i\n", buff, i);
 		while(i>=0){
 			if(word_search2(buff) || i == 0){
 				strncpy(pr, buff, BUFFLEN - (pr - result));
 				pr += strlen(buff);
 				*pr++ = ' ';
 				p += strlen(buff);
-	//			printf("p is %s\n", p);
 				break;
 			}
-	//		printf("index[%i] is %i\n", i, index[i]);
 			i--;
 			memset(buff+index[i], 0, BUFFLEN - index[i]);
 		}
 
 	}
-	printf("result %s\n", result);
+	printf("%s\n", result);
 	return 0;
 }
