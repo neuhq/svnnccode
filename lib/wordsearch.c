@@ -223,7 +223,7 @@ int word_search_init(const char* idxpath, const char* wordpath)
 	sign = 1;
 	return 0;
 }
-
+/* search words begian a Hanzi */
 int word_search(const char* word, char* buff, int len)
 {
 	if(!sign){
@@ -249,7 +249,7 @@ int word_search(const char* word, char* buff, int len)
 	write(STDOUT_FILENO, (wordm + index_word), index_end - index_word);
 	return 0;
 }
-
+/* check if a words is a words */
 int word_search2(const char* word)
 {
 	char buff[BUFFLEN] = {0};
@@ -277,6 +277,7 @@ int word_search2(const char* word)
 
 }
 #define	MAXWORD	10
+/* pre word_split */
 int word_split(const char* str)
 {
 	printf("%s\n", str);
@@ -291,7 +292,7 @@ int word_split(const char* str)
 		while(utf8_length(p) <= 1){
 			*pr++ = *p++;
 		}
-		if(pr != result)
+		if(pr != result )
 			*pr ++ = ' ';
 		int l = 0;
 		char* t = p;
@@ -328,5 +329,51 @@ int word_split(const char* str)
 
 	}
 	printf("%s\n", result);
+	return 0;
+}
+
+/* suf word_split */
+int word_splits(const char* str)
+{
+	
+}
+
+int sentence_clear(const char* str, char** offset, char* target, int len)
+{
+	char buff[16];
+	char* p = str;
+	char* t = target;
+	int sign = 0;
+	while(*p){
+		int l;
+		int a = 0;
+		while(*p && (l = utf8_length(p)) <= 1){
+			p++;
+			a = 1;
+		}
+		if(!*p)
+			break;
+		if(sign != 0 && a)
+				*t++ = ' ';
+		strncpy(buff, p, l);
+		buff[l] = '\0';
+		if(ishanzi(buff)){
+			strncpy(t, buff, strlen(buff)+1);
+			p += l;
+			t += strlen(buff);
+		}
+		else{
+			p += l;
+			if(!sign)
+				continue;
+			else{
+				while((l = utf8_length(p)) <= 1)
+					p += l;
+				break;
+			}
+		}
+		sign = 1;
+	};
+	*offset = p;
 	return 0;
 }
