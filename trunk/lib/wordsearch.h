@@ -24,4 +24,5 @@ int word_search_init(const char* idxpath, const char* wordpath);
 int word_search(const char* word, char* buff, int len);
 int word_search2(const char* word);
 int word_split(const char* str);
+int sentence_clear(const char* str, char** offset, char* target, int len);
 #endif
