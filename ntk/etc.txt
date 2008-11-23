@@ -100,3 +100,6 @@ http://code.google.com/p/siphon svn/trunk/Siphon/settings
 
 ===============================================================================
 uint32_t uint16_t uint8_t	#include <stdint.h>
+
+===============================================================================
+iso U盘 livecd-iso-to-disk
