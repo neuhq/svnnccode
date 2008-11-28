@@ -103,3 +103,8 @@ uint32_t uint16_t uint8_t	#include <stdint.h>
 
 ===============================================================================
 iso U盘 livecd-iso-to-disk livecd-creator
+
+==============================================================================
+mplayer Cannot prepare subtitle font
+似乎这个问题和fontconfig有关系，vim /etc/mplayer/mplayer.conf，
+将fontconfig = yes  --->no，现在使用一切正常。
