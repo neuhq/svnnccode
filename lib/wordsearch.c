@@ -278,22 +278,22 @@ int word_search2(const char* word)
 }
 #define	MAXWORD	10
 /* pre word_split */
-int word_split(const char* str)
+int word_split(const char* str, char* splited, int len)
 {
-	printf("%s\n", str);
+//	printf("%s\n", str);
 	char buff[BUFFLEN];
 	char result[BUFFLEN];
 	int index[MAXWORD];
 	char* pr = result;
-	char* p = str;
+	char* p = (char*)str;
 	memset(result, 0, BUFFLEN * sizeof(char));
 	while(p - str < strlen(str)){
 		memset(buff, 0, BUFFLEN * sizeof(char));
 		while(utf8_length(p) <= 1){
 			*pr++ = *p++;
 		}
-		if(pr != result )
-			*pr ++ = ' ';
+//		if(pr != result )
+//			*pr ++ = ' ';
 		int l = 0;
 		char* t = p;
 		int i = -1;
@@ -328,14 +328,73 @@ int word_split(const char* str)
 		}
 
 	}
-	printf("%s\n", result);
+	strncpy(splited, result, len);
 	return 0;
 }
 
 /* suf word_split */
-int word_splits(const char* str)
+int word_split_r(const char* str, char* splited, int len)
 {
-	
+	char buff[BUFFLEN] = {0};
+	char result[BUFFLEN] = {0};
+	char* reserve[MAXWORD] = {0};
+	char* ps = (char*)str + strlen(str) - 1;
+	char* pb = buff + BUFFLEN - 1;
+	char* pr = result + BUFFLEN - 1;
+	*pb = '\0';
+	*pr = '\0';
+	while(ps >= str){
+		int l;
+		while( ps >= str && (l = utf8_length(ps)) <= 1)
+			ps--;
+		if(ps < str)
+			break;
+		char words[8] = {0};
+		strncpy(words, ps, l);
+		if(ps >= str && !ishanzi(words)){
+			ps--;
+			continue;
+		}
+		int i = 0;
+		while(i < MAXWORD ){
+			reserve[i] = ps;
+			pb -= strlen(words);
+			strncpy(pb, words, strlen(words));
+			i++;
+			while((--ps >= str && (l = utf8_length(ps)) <= 1));
+			if(ps < str)
+				break;
+			memset(words, 0, 8);
+			strncpy(words, ps, l);
+			if(ishanzi(words))
+				continue;
+			else{
+				ps --;
+				break;
+			}
+		}
+		int k;
+		while(i >= 1){
+			if(i == 1 || word_search2(pb)){
+				pr -= strlen(pb);
+				strncpy(pr, pb, strlen(pb));
+				*--pr = ' ';
+				ps = reserve[i-1] -1;
+				break;
+			}
+			pb += utf8_length(pb);
+			i--;
+			continue;
+		}
+		memset(buff, 0, BUFFLEN);
+		pb = buff + BUFFLEN - 1;
+		*pb = '\0';
+	}
+	pr++;
+	if(pr - result >= BUFFLEN)
+		return -1;
+	strncpy(splited, pr, len);
+	return 0;
 }
 
 int sentence_clear(const char* str, char** offset, char* target, int len)
