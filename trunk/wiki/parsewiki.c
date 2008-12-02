@@ -22,8 +22,10 @@
 
 #define	MAXBUFFER	8192
 
-#define	LEFT_SEP	"[["
-#define RIGH_SEP	"]]"
+/*#define	LEFT_SEP	"[["
+#define RIGH_SEP	"]]"*/
+#define	LEFT_SEP	"【"
+#define RIGH_SEP	"】"
 
 typedef struct _ADDRESS{
 	int left;
