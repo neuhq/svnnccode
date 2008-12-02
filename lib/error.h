@@ -4,6 +4,21 @@
 /* Nonfatal error related to a system call.
  * Print a message and return. */
 
+#define	ERR_RET(s, ...) err_msg("FILE %s FUNC %s() LINE %i",\
+	   							__FILE__, __func__, __LINE__);\
+						err_ret(s, ##__VA_ARGS__)
+#define	ERR_SYS(s, ...) err_msg("FILE %s FUNC %s() LINE %i",\
+	   							__FILE__, __func__, __LINE__);\
+						err_SYS(s, ##__VA_ARGS__)
+#define	ERR_DUMP(s, ...) err_msg("FILE %s FUNC %s() LINE %i",\
+	   							__FILE__, __func__, __LINE__);\
+						err_DUMP(s, ##__VA_ARGS__)
+#define	ERR_MSG(s, ...) err_msg("FILE %s FUNC %s LINE %i",\
+	   							__FILE__, __func__, __LINE__);\
+						err_msg(s, ##__VA_ARGS__)
+#define	ERR_QUIT(s, ...) err_msg("FILE %s FUNC %s LINE %i",\
+	   							__FILE__, __func__, __LINE__);\
+						err_QUIT(s, ##__VA_ARGS__)
 void
 err_ret(const char *fmt, ...);
 
