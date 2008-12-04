@@ -4,21 +4,21 @@
 /* Nonfatal error related to a system call.
  * Print a message and return. */
 
-#define	ERR_RET(s, ...) err_msg("FILE %s FUNC %s() LINE %i",\
+#define	ERR_RET(s, ...) do{err_msg("FILE %s FUNC %s() LINE %i",\
 	   							__FILE__, __func__, __LINE__);\
-						err_ret(s, ##__VA_ARGS__)
-#define	ERR_SYS(s, ...) err_msg("FILE %s FUNC %s() LINE %i",\
+						err_ret(s, ##__VA_ARGS__);}while(0)
+#define	ERR_SYS(s, ...) do{err_msg("FILE %s FUNC %s() LINE %i",\
 	   							__FILE__, __func__, __LINE__);\
-						err_SYS(s, ##__VA_ARGS__)
-#define	ERR_DUMP(s, ...) err_msg("FILE %s FUNC %s() LINE %i",\
+						err_sys(s, ##__VA_ARGS__);}while(0)
+#define	ERR_DUMP(s, ...) do{err_msg("FILE %s FUNC %s() LINE %i",\
 	   							__FILE__, __func__, __LINE__);\
-						err_DUMP(s, ##__VA_ARGS__)
-#define	ERR_MSG(s, ...) err_msg("FILE %s FUNC %s LINE %i",\
+						err_dump(s, ##__VA_ARGS__);}while(0)
+#define	ERR_MSG(s, ...) do{err_msg("FILE %s FUNC %s LINE %i",\
 	   							__FILE__, __func__, __LINE__);\
-						err_msg(s, ##__VA_ARGS__)
-#define	ERR_QUIT(s, ...) err_msg("FILE %s FUNC %s LINE %i",\
+						err_msg(s, ##__VA_ARGS__);}while(0)
+#define	ERR_QUIT(s, ...) do{err_msg("FILE %s FUNC %s LINE %i",\
 	   							__FILE__, __func__, __LINE__);\
-						err_QUIT(s, ##__VA_ARGS__)
+						err_quit(s, ##__VA_ARGS__);}while(0)
 void
 err_ret(const char *fmt, ...);
 

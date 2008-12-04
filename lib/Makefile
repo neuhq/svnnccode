@@ -19,5 +19,9 @@ ishanzi = ishanzi.o ishanzi_main.o
 ishanzi_main : ${ishanzi}
 	gcc ${CFLAGS} ${ishanzi} -o ishanzi_main
 
+pinyin = pinyin_main.o wordsearch.o error.o sim2tri.o ishanzi.o pinyin.o
+pinyin_main : $(pinyin)
+	gcc ${CFLAGS} ${pinyin} -o pinyin_main
+
 clean:
 	rm *.o
