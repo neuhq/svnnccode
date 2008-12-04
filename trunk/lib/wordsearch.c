@@ -183,6 +183,8 @@ caddr_t	wordm;
 static int	sign = 0;
 int word_search_init(const char* idxpath, const char* wordpath)
 {
+	if(sign)
+		return 0;
 	struct stat statbuff;
 	if(stat(idxpath, &statbuff) < 0){
 		err_msg("%s %s %i stat %s error",
