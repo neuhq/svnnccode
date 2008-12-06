@@ -33,7 +33,7 @@
 #include	"ishanzi.h"
 #include	"globaldef.h"
 
-typedef struct _pinyin{
+typedef struct _Pinyin{
 	char	py[8];
 }Pinyin;
 
@@ -57,7 +57,7 @@ int pinyin_to_data(const char* pinyin, const char* data)
 					fdt, 0)) == (caddr_t)-1)
 		ERR_SYS("mmap %s error", data);
 	memset(mdt, 0, sizeof(char) * MAXUNICODE * MAXPINYIN);
-	struct _pinyin* pa = (struct _pinyin*)mdt;
+	Pinyin* pa = (Pinyin*)mdt;
 
 	char buff[BUFFLEN] = {0};
 	uint32_t multi = 0x10000;
@@ -128,7 +128,7 @@ int pinyin_to_data(const char* pinyin, const char* data)
 	fclose(fpy);
 	return 0;
 }
-static struct _pinyin* pinyina = NULL;
+static Pinyin* pinyina = NULL;
 int hanzi_pinyin_init(const char* pinyin)
 {
 	if(pinyina)
@@ -142,7 +142,7 @@ int hanzi_pinyin_init(const char* pinyin)
 					PROT_READ, MAP_SHARED, 
 					fdt, 0)) == (caddr_t)-1)
 		ERR_SYS("mmap %s error", pinyin);
-	pinyina = (struct _pinyin*)mdt;
+	pinyina = (Pinyin*)mdt;
 	return 0;
 }
 
