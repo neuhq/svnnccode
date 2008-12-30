@@ -1,7 +1,4 @@
 
-#big52gbk_convert.o :
-#	g++ -c big52gbk_convert.cpp
-
 #$.o : %.c
 #$(CC) -c -Wall -g $(CFLAGS) $(CPPFLAGS) $<-o $@
 
