@@ -1,0 +1,2 @@
+unicode帮助
+perldoc perluniintro
