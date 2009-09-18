@@ -135,3 +135,29 @@ opera菜单字体发虚问题
 						|浏览器对话框
 						|浏览器面板
 						|浏览器工具提示
+
+1. img 镜像转iso（img2iso）
+
+需要软件，ccd2iso，这个软件在源中有，可以直接安装。
+
+sudo apt-get install ccd2iso
+
+然后，ccd2iso filename.img filename.iso
+
+2. cue/bin 镜像转iso（cue/bin2iso）
+
+需要软件 ，bchunk，这个软件在源中也有，
+
+sudo apt-get install bchunk
+
+然后，然后，bchunk filename.bin filename.cue filename.iso
+
+3. dmg （压缩的z-lib)镜像转 iso
+
+这个过程是一个perl脚本(dmg2iso.pl)完成的，dmg2iso.pl 脚本下载
+
+下载下来后，可能还要加上可执行权限 chmod +x dmg2iso.pl
+
+使法是这样的：dmg2iso.pl filename.dmg filename.iso
+
+最后就是挂载ISO了，这在linux下最简单不过了。

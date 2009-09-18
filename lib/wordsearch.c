@@ -225,32 +225,7 @@ int word_search_init(const char* idxpath, const char* wordpath)
 	sign = 1;
 	return 0;
 }
-/* search words begian a Hanzi */
-int word_search(const char* word, char* buff, int len)
-{
-	if(!sign){
-		err_msg("please call word_search_init first");
-		return -1;
-	}
-	if(utf8_length(word) <= 1)
-		return -1;
-	uint32_t index_unicode = stringprep_utf8_to_unichar(word);
-	if(index_unicode >= UNICODELEN){
-		err_msg("%s %s %i UNICODELEN is too small %s",
-				__FILE__, __func__, __LINE__, word);
-		return -1;
-	}
-	uint32_t index_word = ntohl(idxm[index_unicode]);
-	uint32_t i;
-	uint32_t index_end;
-	for(i=index_unicode + 1; i < UNICODELEN; i++ ){
-		if(ntohl(idxm[i]) != 0)
-			break;
-	}
-	index_end = ntohl(idxm[i]);
-	write(STDOUT_FILENO, (wordm + index_word), index_end - index_word);
-	return 0;
-}
+
 /* check if a words is a words */
 int word_search2(const char* word)
 {
@@ -279,7 +254,13 @@ int word_search2(const char* word)
 
 }
 #define	MAXWORD	10
-/* pre word_split */
+/**
+ *	word_split - Perform maximum match
+ *
+ *	@str: string to split
+ *	@splited: space splitted string to be placed
+ *	@len: splited length
+ */
 int word_split(const char* str, char* splited, int len)
 {
 //	printf("%s\n", str);
@@ -334,7 +315,13 @@ int word_split(const char* str, char* splited, int len)
 	return 0;
 }
 
-/* suf word_split */
+/**
+ *	word_split_r - Perform reverse maximum match
+ *
+ *	@str: str to split
+ *	@splited: Space where splitted string to be placed
+ *	@len: length of splited
+ */
 int word_split_r(const char* str, char* splited, int len)
 {
 	char buff[BUFFLEN] = {0};
@@ -399,6 +386,16 @@ int word_split_r(const char* str, char* splited, int len)
 	return 0;
 }
 
+/**
+ * sentence_clear : Strip non-chinese symbol
+ *
+ * @str: String to clear
+ * @offset: When return, (*offset - str) is the string that has been dealt
+ * @target: Cleared string is store here
+ * @len: length of target
+ *
+ * Strip non-chinese symbol
+ */
 int sentence_clear(const char* str, char** offset, char* target, int len)
 {
 	char buff[16];
@@ -419,6 +416,8 @@ int sentence_clear(const char* str, char** offset, char* target, int len)
 		strncpy(buff, p, l);
 		buff[l] = '\0';
 		if(ishanzi(buff)){
+			if(t + strlen(buff) + 1 - target > len)
+				break;
 			strncpy(t, buff, strlen(buff)+1);
 			p += l;
 			t += strlen(buff);
